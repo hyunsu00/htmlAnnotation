@@ -7,6 +7,7 @@
   "scripts": {
     "build": "webpack",
     "watch:webpdfsdk": "webpack --watch",
+    "watch:pdf-annotate.js": "npm --prefix ./extern/pdf-annotate.js run watch",
     "lib:pdf-annotate.js": "npm --prefix ./extern/pdf-annotate.js run build",
     "dev:pdf-annotate.js": "npm --prefix ./extern/pdf-annotate.js run dev",
     "build:libs": "npm run lib:pdf-annotate.js",
