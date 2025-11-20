@@ -165,7 +165,11 @@
     <li class="right"><a id="AUndo">실행취소</a></li>
   </ul>
   <div id="pdfjs_wrap">
-    <!-- 페이지들이 여기에 동적으로 로드됩니다 -->
+    <div id="viewerContainer" tabindex="0">
+      <div id="viewer" class="pdfViewer" style="cursor: default">
+        <!-- 페이지들이 여기에 동적으로 로드됩니다 -->
+      </div>
+    </div>
   </div>
 
   <script>
@@ -196,12 +200,12 @@
     }
 
     async function loadAllPages() {
-      const container = document.getElementById('pdfjs_wrap');
+      const viewer = document.getElementById('viewer');
       
       for (let i = 1; i <= 14; i++) {
         const pageElement = await loadPage(i);
         if (pageElement) {
-          container.appendChild(pageElement);
+          viewer.appendChild(pageElement);
         }
       }
     }
