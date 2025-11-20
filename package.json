@@ -1,0 +1,14 @@
+{
+  "name": "htmlannotation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "pdf-annotate.js",
+  "scripts": {
+    "lib:pdf-annotate.js": "npm --prefix ./extern/pdf-annotate.js run build",
+    "dev:pdf-annotate.js": "npm --prefix ./extern/pdf-annotate.js run dev",
+    "build:libs": "npm run lib:pdf-annotate.js",
+    "build:devs": "npm run dev:pdf-annotate.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
