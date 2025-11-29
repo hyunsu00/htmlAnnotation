@@ -1,13 +1,13 @@
 // main.js
-import "../dist/webPdfLib.js";
-const webPdfApp = webPdfLib["default"];
-const ACTION_ID = webPdfLib.ACTION_ID;
-const EVENT_ID = webPdfLib.EVENT_ID;
-const DRAW_TYPE = webPdfLib.DRAW_TYPE;
-const COLOR_TYPE = webPdfLib.COLOR_TYPE;
-const LINE_STYLE = webPdfLib.LINE_STYLE;
-const SCROLL_MODE = webPdfLib.SCROLL_MODE;
-const SPREAD_MODE = webPdfLib.SPREAD_MODE;
+import "../dist/annotationLib.js";
+const webPdfApp = annotationLib["default"];
+const ACTION_ID = annotationLib.ACTION_ID;
+const EVENT_ID = annotationLib.EVENT_ID;
+const DRAW_TYPE = annotationLib.DRAW_TYPE;
+const COLOR_TYPE = annotationLib.COLOR_TYPE;
+const LINE_STYLE = annotationLib.LINE_STYLE;
+const SCROLL_MODE = annotationLib.SCROLL_MODE;
+const SPREAD_MODE = annotationLib.SPREAD_MODE;
 // import webPdfAppListener from "./listener.js";
 // import mobile from "./mobile.js";
 

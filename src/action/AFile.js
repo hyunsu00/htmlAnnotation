@@ -1,4 +1,4 @@
-import webPdfLib from '../webPdfLib.js';
+import annotationLib from '../annotationLib.js';
 import AnnotationManager from '../annotation/annotationManager.js';
 import EVENT_ID from '../define/eventDefines.js';
 import EventManager from '../event/eventManager.js';
@@ -16,7 +16,7 @@ export default class AFile {
    */
   static async d_save(force) {
     console.group(`function save(force)`);
-    await AnnotationManager.save(webPdfLib.PDFViewerApplication.baseUrl, webPdfLib.PDFViewerApplication.pdfDocument, force);
+    await AnnotationManager.save(annotationLib.PDFViewerApplication.baseUrl, annotationLib.PDFViewerApplication.pdfDocument, force);
     console.groupEnd();
   }
   /**
@@ -25,7 +25,7 @@ export default class AFile {
    */
   static async d_save_annotation(force) {
     console.group(`function d_save_annotation(force)`);
-    await AnnotationManager.saveAnnotation(webPdfLib.PDFViewerApplication.baseUrl, force);
+    await AnnotationManager.saveAnnotation(annotationLib.PDFViewerApplication.baseUrl, force);
     console.groupEnd();
   }
   /**
@@ -34,12 +34,12 @@ export default class AFile {
    */
   static async d_download(fileName) {
     console.group(`function d_download(fileName)`);
-    // webPdfLib.PDFViewerApplication.toolbar.eventBus.dispatch('download', {
-    //   source: webPdfLib.PDFViewerApplication.toolbar,
+    // annotationLib.PDFViewerApplication.toolbar.eventBus.dispatch('download', {
+    //   source: annotationLib.PDFViewerApplication.toolbar,
     // });
-    const url = webPdfLib.PDFViewerApplication.url;
+    const url = annotationLib.PDFViewerApplication.url;
     fileName = fileName ?? Util.getPdfFilenameFromUrl(url);
-    await AnnotationManager.download(webPdfLib.PDFViewerApplication.baseUrl, webPdfLib.PDFViewerApplication.pdfDocument, fileName);
+    await AnnotationManager.download(annotationLib.PDFViewerApplication.baseUrl, annotationLib.PDFViewerApplication.pdfDocument, fileName);
     console.groupEnd();
   }
   /**
@@ -48,9 +48,9 @@ export default class AFile {
    */
   static async d_download_annotation(fileName) {
     console.group(`function d_download_annotation(fileName)`);
-    const url = webPdfLib.PDFViewerApplication.url;
+    const url = annotationLib.PDFViewerApplication.url;
     fileName = fileName ?? (Util.getPdfFilenameFromUrl(url).slice(0, -4) + '.json');
-    await AnnotationManager.downloadAnnotation(webPdfLib.PDFViewerApplication.baseUrl, fileName);
+    await AnnotationManager.downloadAnnotation(annotationLib.PDFViewerApplication.baseUrl, fileName);
     console.groupEnd();
   }
   /**
@@ -87,8 +87,8 @@ export default class AFile {
     // file = Uint8Array.from(binaryStr, ch => ch.charCodeAt(0));
 
     if (file === undefined || file === null) {
-      // webPdfLib.PDFViewerApplication.toolbar.eventBus.dispatch('openfile', {
-      //   source: webPdfLib.PDFViewerApplication.toolbar,
+      // annotationLib.PDFViewerApplication.toolbar.eventBus.dispatch('openfile', {
+      //   source: annotationLib.PDFViewerApplication.toolbar,
       // });
       // 파일 입력 요소 생성
       const input = document.createElement('input');
@@ -103,13 +103,13 @@ export default class AFile {
           url = { url, originalUrl: file.name };
         }
         window.localStorage.removeItem(`${file.name}/annotations`);
-        webPdfLib.PDFViewerApplication.open(url);
+        annotationLib.PDFViewerApplication.open(url);
       };
 
       // 파일 선택 다이얼로그 표시
       input.click();
     } else {
-      webPdfLib.PDFViewerApplication.open(file);
+      annotationLib.PDFViewerApplication.open(file);
     }
 
     console.groupEnd();
@@ -177,7 +177,7 @@ export default class AFile {
    */
   static d_print() {
     console.group(`function d_print()`);
-    AnnotationManager.print(webPdfLib.PDFViewerApplication.baseUrl, webPdfLib.PDFViewerApplication.pdfDocument);
+    AnnotationManager.print(annotationLib.PDFViewerApplication.baseUrl, annotationLib.PDFViewerApplication.pdfDocument);
     console.groupEnd();
   }
 
@@ -186,7 +186,7 @@ export default class AFile {
    */
   static e_dialog_password(password) {
     if (password) {
-      webPdfLib.PDFViewerApplication.passwordPrompt.verify(password);
+      annotationLib.PDFViewerApplication.passwordPrompt.verify(password);
     } else {
       EventManager.dispatch(EVENT_ID.PASSWORD, { state: 'failed' });
     }
@@ -197,8 +197,8 @@ export default class AFile {
    */
   static d_info() {
     console.group(`function d_info()`);
-    webPdfLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('documentproperties', {
-      source: webPdfLib.PDFViewerApplication.secondaryToolbar,
+    annotationLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('documentproperties', {
+      source: annotationLib.PDFViewerApplication.secondaryToolbar,
     });
     // console.warn(`function d_info() 다이얼로그 구현 필요`);
     console.groupEnd();

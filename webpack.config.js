@@ -5,20 +5,20 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   // Entry 설정 (입력 파일 경로)
   // 기본엔트리 : index.js -> 사용자 기본 엔트리파일 변경
-  entry: "./src/webPdfLib.js",
+  entry: "./src/annotationLib.js",
   // Output 설정 (출력 디렉터리와 파일 이름)
   // 기본경로 : dist/main.js -> 사용자 경로 및 출력파일 이름 변경
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "webPdfLib.js",
-    library: 'webPdfLib',
+    filename: "annotationLib.js",
+    library: 'annotationLib',
     libraryTarget: 'umd'
   },
   plugins: [
     // 웹팩의 빌드 진행율을 표시해주는 플러그인
     new webpack.ProgressPlugin(),
 	  // 컴파일 + 번들링 CSS 파일이 저장될 경로와 이름 지정
-    new MiniCssExtractPlugin({ filename: 'webPdfLib.css' })
+    new MiniCssExtractPlugin({ filename: 'annotationLib.css' })
   ],
   module: {
     rules: [

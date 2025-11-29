@@ -2,7 +2,7 @@
 import Util from '../utils/util.js';
 import AnnotationManager from '../annotation/annotationManager.js';
 import AnnotationUtils from '../annotation/annotationUtils.js';
-import webPdfLib from '../webPdfLib.js';
+import annotationLib from '../annotationLib.js';
 import EVENT_ID from "../define/eventDefines.js";
 import EventManager from '../event/eventManager.js';
 import UiManager from '../uiFrame/uiManager.js';
@@ -17,11 +17,11 @@ export default (function () {
       AnnotationManager.modified = false;
       /*
             if (Util.IsMavenMode()) {
-              webPdfLib.PDFViewerApplication.pdfViewer.mavenModeState = true;
+              annotationLib.PDFViewerApplication.pdfViewer.mavenModeState = true;
             }
       */
       // low data를 얻어온다.
-      let data = await webPdfLib.PDFViewerApplication.pdfDocument.getData();
+      let data = await annotationLib.PDFViewerApplication.pdfDocument.getData();
       const _appOptions = window.PDFViewerApplicationOptions;
       if (_appOptions && _appOptions.get("renderExternalAnnotations")) {
         try {
@@ -38,7 +38,7 @@ export default (function () {
       console.log('End pdfjsListener.onDocumentLoaded()');
     },
     onWebViewerAnnotateRender({ parentNode, canvasWrapper, id, pdfPage, scale }) {
-      const docId = webPdfLib.PDFViewerApplication.baseUrl;
+      const docId = annotationLib.PDFViewerApplication.baseUrl;
       AnnotationManager.render(docId, parentNode, canvasWrapper, id, pdfPage, scale);
     },
     onWebViewerAnnotateThumnailRender({ pageNumber }) {
@@ -51,7 +51,7 @@ export default (function () {
     },
     async onStreaming({ file }) {
       try {
-        const contextPath = webPdfLib.getContextpath();
+        const contextPath = annotationLib.getContextpath();
         console.log('Begin pdfjsListener.onStreaming(contextPath = ', contextPath, 'url = ', file, ')');
         if (Util.isRelativePath(file)) {
           const removeTrailingSlash = (path) => {
@@ -98,11 +98,11 @@ export default (function () {
               args.rangeChunkSize = Math.floor(contentLength / 3);
             }
           }
-          webPdfLib.PDFViewerApplication.open(url, args);
-          webPdfLib.PDFViewerApplication.setTitleUsingUrl(file);
+          annotationLib.PDFViewerApplication.open(url, args);
+          annotationLib.PDFViewerApplication.setTitleUsingUrl(file);
         } else {
           console.log('Since it is not a streaming file, the document opens by default.');
-          webPdfLib.PDFViewerApplication.open(file);
+          annotationLib.PDFViewerApplication.open(file);
         }
         console.log('End pdfjsListener.onStreaming(url = ', file, ')');
       } catch (error) {
@@ -111,8 +111,8 @@ export default (function () {
       }
     },
     onDocumentSave() {
-      const docId = webPdfLib.PDFViewerApplication.baseUrl;
-      AnnotationManager.save(docId, webPdfLib.PDFViewerApplication.pdfDocument, false);
+      const docId = annotationLib.PDFViewerApplication.baseUrl;
+      AnnotationManager.save(docId, annotationLib.PDFViewerApplication.pdfDocument, false);
     },
 
     // 다이얼로그
@@ -171,7 +171,7 @@ export default (function () {
         case 'description':
           {
             EventManager.dispatch(EVENT_ID.DOCUMENT_SUMMARY, { value });
-            webPdfLib.PDFViewerApplication.pdfDocumentProperties.close();
+            annotationLib.PDFViewerApplication.pdfDocumentProperties.close();
           }
           break;
         case 'page_number':

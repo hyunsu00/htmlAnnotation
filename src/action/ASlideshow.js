@@ -1,4 +1,4 @@
-import webPdfLib from '../webPdfLib.js';
+import annotationLib from '../annotationLib.js';
 
 /**  
  * @category Action
@@ -11,10 +11,10 @@ export default class ASlideshow {
   static slideshow_first() {
     console.group(`function slideshow_first(evtAction)`);
 
-    webPdfLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('firstpage', {
-      source: webPdfLib.PDFViewerApplication.secondaryToolbar,
+    annotationLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('firstpage', {
+      source: annotationLib.PDFViewerApplication.secondaryToolbar,
     });
-    webPdfLib.PDFViewerApplication.secondaryToolbar.close();
+    annotationLib.PDFViewerApplication.secondaryToolbar.close();
 
     ASlideshow.slideshow_current();
 
@@ -26,8 +26,8 @@ export default class ASlideshow {
   static slideshow_current() {
     console.group(`function slideshow_current(evtAction)`);
 
-    webPdfLib.PDFViewerApplication.toolbar.eventBus.dispatch('presentationmode', {
-      source: webPdfLib.PDFViewerApplication.toolbar,
+    annotationLib.PDFViewerApplication.toolbar.eventBus.dispatch('presentationmode', {
+      source: annotationLib.PDFViewerApplication.toolbar,
     });
 
     console.groupEnd();

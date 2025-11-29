@@ -1,4 +1,4 @@
-import webPdfLib from '../webPdfLib.js';
+import annotationLib from '../annotationLib.js';
 import {FIND_TYPE, LINE_STYLE, COLOR_TYPE, PROPERTY_TYPE} from "../define/valueDefines.js";
 
 // @ts-check
@@ -22,7 +22,7 @@ export default (function () {
      */
     createFindValue(type, query, caseSensitive, entireWord, highlightAll, findPrevious) {
       return {
-        source: webPdfLib.PDFViewerApplication.findBar,
+        source: annotationLib.PDFViewerApplication.findBar,
         type: type,
         query: query,
         phraseSearch: true,

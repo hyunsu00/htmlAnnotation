@@ -1,10 +1,10 @@
-// webPdfLib.js
+// annotationLib.js
 import PDFJsListener from './listener/pdfjsListener.js';
 import AnnotationManager from './annotation/annotationManager.js';
 import UndoRedoManager from './undoRedo/UndoRedoManager.js';
 //
-import './webPdfLib.scss';
-import mainHtml from './template/webPdfLib.html';
+import './annotationLib.scss';
+import mainHtml from './template/annotationLib.html';
 import sideHtml from "./template/webPdfSidebar.html";
 import ACTION_ID from "./define/actionDefines.js";
 import EVENT_ID from './define/eventDefines.js';
@@ -32,7 +32,7 @@ export {
 
 /**
  * @category Main
- * @class webPdfLib
+ * @class annotationLib
  */
 export default (function () {
   let contextPath = '';
@@ -47,7 +47,7 @@ export default (function () {
       annotationUrl = '',
       documentName = ''
     } = {}) {
-      console.log(`[webPdfLib.initialize({lipsPath = ${lipsPath}, defaultUrl = ${defaultUrl}, contextPath = ${contextPath}, streaming = ${streaming}, renderExternalAnnotations: ${renderExternalAnnotations}, annotationUrl : ${annotationUrl}, documentName: ${documentName}})]`);
+      console.log(`[annotationLib.initialize({lipsPath = ${lipsPath}, defaultUrl = ${defaultUrl}, contextPath = ${contextPath}, streaming = ${streaming}, renderExternalAnnotations: ${renderExternalAnnotations}, annotationUrl : ${annotationUrl}, documentName: ${documentName}})]`);
 
       this.contextPath = contextPath;
       
@@ -154,7 +154,7 @@ export default (function () {
     },
     /**
      * ActionManager 함수객체 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      *
      * @return {ActionManager}
      */
@@ -163,7 +163,7 @@ export default (function () {
     },
     /**
      * ValueGenerator 함수객체 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      *
      * @return {ValueGenerator}
      */
@@ -172,7 +172,7 @@ export default (function () {
     },
     /**
      * EventManager 함수객체 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      *
      * @return {EventManager}
      */
@@ -182,7 +182,7 @@ export default (function () {
 
     /**
      * AnnotationManager 함수객체 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      *
      * @return {AnnotationManager}
      */
@@ -192,7 +192,7 @@ export default (function () {
 
     /**
      * target 개체의 속성 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      * @param {Object} target - 주석 개체
      *
      * @return {Object}
@@ -202,7 +202,7 @@ export default (function () {
     },
     /**
      * 현재 활성화된 페이지 번호 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      *
      * @return {number}
      */
@@ -211,7 +211,7 @@ export default (function () {
     },
     /**
      * 현재 활성화된 페이지 번호 이동
-     * @memberof webPdfLib
+     * @memberof annotationLib
      * @param {Number} pageNum - 페이지번호 (1페이지부터 시작)
      */
     goToPage(pageNum) {
@@ -219,7 +219,7 @@ export default (function () {
     },
     /**
      * 문서의 전체 페이지수 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      * 
      * @return {number}
      */
@@ -228,7 +228,7 @@ export default (function () {
     },
     /**
      * 문서 타이틀 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      *
      * @return {String}
      */
@@ -237,7 +237,7 @@ export default (function () {
     },
     /**
      * 페이지 썸네일 생성
-     * @memberof webPdfLib
+     * @memberof annotationLib
      * @param {Number} pageNum - 페이지번호 (1페이지부터 시작)
      */
     renderThumnail(pageNum) {
@@ -257,21 +257,21 @@ export default (function () {
     },
     /**
      * 컨텍스트 경로 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      */
     getContextpath() {
       return this.contextPath;
     },
     /**
      * 메모 작성자 반환
-     * @memberof webPdfLib
+     * @memberof annotationLib
      */
     getAuthorName() { 
       return AnnotationManager.author;
     },
     /**
      * 메모 작성자 설정
-     * @memberof webPdfLib
+     * @memberof annotationLib
      * @param {String} author - 작성자
      */
     setAuthorName(author) {

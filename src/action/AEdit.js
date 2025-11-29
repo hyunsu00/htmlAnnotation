@@ -1,4 +1,4 @@
-import webPdfLib from '../webPdfLib.js';
+import annotationLib from '../annotationLib.js';
 import AnnotationManager from '../annotation/annotationManager.js';
 import UiManager from '../uiFrame/uiManager.js';
 
@@ -11,13 +11,13 @@ export default class AEdit {
    * ACTION_ID.UNDO 액션시 호출되는 함수
    */
   static e_undo() {
-    webPdfLib.gUndoRedoManager.Undo();
+    annotationLib.gUndoRedoManager.Undo();
   }
   /**
    * ACTION_ID.REDO 액션시 호출되는 함수
    */
   static e_redo() {
-    webPdfLib.gUndoRedoManager.Redo();
+    annotationLib.gUndoRedoManager.Redo();
   }
   /**
    * ACTION_ID.COPY 액션시 호출되는 함수
@@ -64,7 +64,7 @@ export default class AEdit {
    */
   static d_find(value) {
     console.group(`function d_find(_value)`);
-    webPdfLib.PDFViewerApplication.findBar.eventBus.dispatch('find', value);
+    annotationLib.PDFViewerApplication.findBar.eventBus.dispatch('find', value);
     // console.warn(`function d_find(_evtAction) 다이얼로그 구현 필요`);
     console.groupEnd();
   }
@@ -72,8 +72,8 @@ export default class AEdit {
    * ACTION_ID.FIND_CLOSE 액션시 호출되는 함수
    */
   static d_find_close() {
-    webPdfLib.PDFViewerApplication.findBar.eventBus.dispatch('findbarclose', {
-      source: webPdfLib.PDFViewerApplication.findBar,
+    annotationLib.PDFViewerApplication.findBar.eventBus.dispatch('findbarclose', {
+      source: annotationLib.PDFViewerApplication.findBar,
     });
   }
 }

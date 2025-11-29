@@ -8,7 +8,7 @@ import CommonFrameUtil from '../../../commonFrame/js/utils/util.js';
 import UiManager from '../../uiFrame/uiManager.js';
 */
 import { AddFormCommand, AddChildFormCommand, ModifyFormCommand, RemoveFormCommand, ModifyComment } from '../undoRedo/UndoRedoCommand.js';
-import webPdfLib from '../webPdfLib.js';
+import annotationLib from '../annotationLib.js';
 import annotationManager from '../annotation/annotationManager.js';
 import EVENT_ID from "../define/eventDefines.js";
 import EventManager from "../event/eventManager.js";
@@ -69,27 +69,27 @@ export default (function () {
       if (annotationManager.annotationType != 'draw' && annotationManager.annotationType != 'cursor') {
         annotationManager.switchUI('cursor');
       }
-      webPdfLib.gUndoRedoManager.Add(new AddFormCommand(docId, pageId, target, result));
+      annotationLib.gUndoRedoManager.Add(new AddFormCommand(docId, pageId, target, result));
       annotationManager.renderThumnail(pageId);
     },
     onAnnotationAddChildForm: function (docId, pageId, target, result) {
       console.log(`call annotationListener.onAnnotationAddChildForm(docId = ${docId}, pageId = ${pageId}, target = `, target, `, result =`, result, ')');
-      webPdfLib.gUndoRedoManager.Add(new AddChildFormCommand(docId, pageId, target, result));
+      annotationLib.gUndoRedoManager.Add(new AddChildFormCommand(docId, pageId, target, result));
       annotationManager.renderThumnail(pageId);
     },
     onAnnotationModifyForm: function (docId, pageId, target, result) {
       console.log(`call annotationListener.onAnnotationModifyForm(docId = ${docId}, pageId = ${pageId}, target = `, target, `, result =`, result, ')');
-      webPdfLib.gUndoRedoManager.Add(new ModifyFormCommand(docId, pageId, target, result));
+      annotationLib.gUndoRedoManager.Add(new ModifyFormCommand(docId, pageId, target, result));
       annotationManager.renderThumnail(pageId);
     },
     onAnnotationRemoveForm: function (docId, pageId, target, result) {
       console.log(`call annotationListener.onAnnotationRemoveForm(docId = ${docId}, pageId = ${pageId}, target = `, target, `, result =`, result, ')');
-      webPdfLib.gUndoRedoManager.Add(new RemoveFormCommand(docId, pageId, target, result));
+      annotationLib.gUndoRedoManager.Add(new RemoveFormCommand(docId, pageId, target, result));
       annotationManager.renderThumnail(pageId);
     },
     onAnnotationModifyComment: function (docId, pageId, target, result) {
       console.log(`call annotationListener.onAnnotationModifyComment(docId = ${docId}, pageId = ${pageId}, target = `, target, `, result =`, result, ')');
-      webPdfLib.gUndoRedoManager.Add(new ModifyComment(docId, pageId, target, result));
+      annotationLib.gUndoRedoManager.Add(new ModifyComment(docId, pageId, target, result));
     },
 
     // 주석 사이드바 활성 / 비활성 (value = false) => 호출되면 주석 사이드바 UI 비활성

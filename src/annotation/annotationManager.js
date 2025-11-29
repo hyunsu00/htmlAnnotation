@@ -15,7 +15,7 @@ import Util from '../utils/util.js';
 import UiManager from '../uiFrame/uiManager.js';
 import AnnotationListener from '../listener/annotationListener.js';
 import AnnotationUtils from './annotationUtils.js';
-import webPdfLib from '../webPdfLib.js';
+import annotationLib from '../annotationLib.js';
 import EVENT_ID from "../define/eventDefines.js";
 import EventManager from '../event/eventManager.js';
 
@@ -128,7 +128,7 @@ export default (function () {
       this._modified = value;
 
       var isEnableModifyAnnotation = this._modified;
-      if (typeof webPdfLib.PDFViewerApplication != 'undefined' && !webPdfLib.PDFViewerApplication.pdfViewer.enableModifyAnnotation) {
+      if (typeof annotationLib.PDFViewerApplication != 'undefined' && !annotationLib.PDFViewerApplication.pdfViewer.enableModifyAnnotation) {
         isEnableModifyAnnotation = false;
       }
 
@@ -138,19 +138,19 @@ export default (function () {
       */
     },
     get currentScaleValue() {
-      return webPdfLib.PDFViewerApplication.pdfViewer.currentScaleValue;
+      return annotationLib.PDFViewerApplication.pdfViewer.currentScaleValue;
     },
     set currentScaleValue(value) {
-      webPdfLib.PDFViewerApplication.pdfViewer.currentScaleValue = value;
+      annotationLib.PDFViewerApplication.pdfViewer.currentScaleValue = value;
     },
     get totalPage() {
-      return webPdfLib.PDFViewerApplication.pdfViewer.pagesCount;
+      return annotationLib.PDFViewerApplication.pdfViewer.pagesCount;
     },
     get currentPageNumber() {
-      return webPdfLib.PDFViewerApplication.pdfViewer.currentPageNumber;
+      return annotationLib.PDFViewerApplication.pdfViewer.currentPageNumber;
     },
     set currentPageNumber(value) {
-      webPdfLib.PDFViewerApplication.pdfViewer.currentPageNumber = value;
+      annotationLib.PDFViewerApplication.pdfViewer.currentPageNumber = value;
     },
     get documentTitle() {
       return window.document.title;
@@ -330,7 +330,7 @@ export default (function () {
     }
 
     // svg 렌더링
-    // const rotation = webPdfLib.PDFViewerApplication.pdfViewer.pagesRotation;
+    // const rotation = annotationLib.PDFViewerApplication.pdfViewer.pagesRotation;
     // const viewport = pdfPage.getViewport({ scale: scale, rotation: rotation });
     const rotation = 0;
     const viewport = {
@@ -786,8 +786,8 @@ export default (function () {
     const PDF_TO_CSS_UNITS = 96.0 / 72.0;
 
     try {
-      const docId = webPdfLib.PDFViewerApplication.baseUrl;
-      const pdfDocument = webPdfLib.PDFViewerApplication.pdfDocument;
+      const docId = annotationLib.PDFViewerApplication.baseUrl;
+      const pdfDocument = annotationLib.PDFViewerApplication.pdfDocument;
       const page = await pdfDocument.getPage(pageIndex + 1);
 
       const viewport = page.getViewport({ scale: DEFAULT_SCALE * PDF_TO_CSS_UNITS });
@@ -1291,9 +1291,9 @@ export default (function () {
       return false;
     };
 
-    const pdfDoc = await webPdfLib.PDFLib.PDFDocument.load(buffer, {
+    const pdfDoc = await annotationLib.PDFLib.PDFDocument.load(buffer, {
       ignoreEncryption: true,
-      parseSpeed: webPdfLib.PDFLib.ParseSpeeds.Slow,
+      parseSpeed: annotationLib.PDFLib.ParseSpeeds.Slow,
       throwOnInvalidObject: true,
       updateMetadata: true,
       capNumbers: false,
@@ -1303,7 +1303,7 @@ export default (function () {
 
     pages.forEach((page) => {
       const annots = page.node.Annots();
-      const annotsRef = page.node.dict.get(webPdfLib.PDFLib.PDFName.Annots);
+      const annotsRef = page.node.dict.get(annotationLib.PDFLib.PDFName.Annots);
       const size = annots?.size();
 
       if (size) {
@@ -1315,15 +1315,15 @@ export default (function () {
           }
           const annotObj = page.node.context.lookup(annotRef);
           if (annotObj) {
-            const subtype = annotObj.lookup(webPdfLib.PDFLib.PDFName.of('Subtype'));
+            const subtype = annotObj.lookup(annotationLib.PDFLib.PDFName.of('Subtype'));
             if (!_isRemoveAnnot(subtype.encodedName)) {
               continue;
             }
 
             // /XObject Obj 삭제
-            const apObj = annotObj.lookup(webPdfLib.PDFLib.PDFName.of('AP'));
+            const apObj = annotObj.lookup(annotationLib.PDFLib.PDFName.of('AP'));
             if (apObj) {
-              const apRef = apObj.dict.get(webPdfLib.PDFLib.PDFName.of('N'));
+              const apRef = apObj.dict.get(annotationLib.PDFLib.PDFName.of('N'));
               if (apRef) {
                 annots.context.delete(apRef);
               }
@@ -1349,7 +1349,7 @@ export default (function () {
         // /Annots Obj 삭제
         page.node.context.delete(annotsRef);
         // Page내의 /Annots 요소 삭제
-        page.node.delete(webPdfLib.PDFLib.PDFName.Annots);
+        page.node.delete(annotationLib.PDFLib.PDFName.Annots);
       }
     });
 
@@ -1366,8 +1366,8 @@ export default (function () {
     const DEFAULT_SCALE = 1.0;
     const PDF_TO_CSS_UNITS = 96.0 / 72.0;
 
-    let writer = new webPdfLib.PDFAnnotateWriter.AnnotationFactory(AnnotationManager.documentData);
-    const pagesCount = webPdfLib.PDFViewerApplication.pagesCount;
+    let writer = new annotationLib.PDFAnnotateWriter.AnnotationFactory(AnnotationManager.documentData);
+    const pagesCount = annotationLib.PDFViewerApplication.pagesCount;
 
     try {
       for (let i = 1; i <= pagesCount; i++) {
@@ -1682,12 +1682,12 @@ export default (function () {
     if (svgEls.length <= 0) {
       return;
     }
-    const { canvas } = webPdfLib.PDFViewerApplication.pdfViewer.getPageView(pageId - 1);
+    const { canvas } = annotationLib.PDFViewerApplication.pdfViewer.getPageView(pageId - 1);
     if (!canvas) {
       return;
     }
     _renderSVG(canvas, svgEls[0]).then((img) => {
-      let thumnail = webPdfLib.PDFViewerApplication.pdfThumbnailViewer.getThumbnail(pageId - 1);
+      let thumnail = annotationLib.PDFViewerApplication.pdfThumbnailViewer.getThumbnail(pageId - 1);
       const reducedCanvas = thumnail._reduceImage(img);
 
       if (thumnail.image) {
@@ -1866,9 +1866,9 @@ export default (function () {
     // AnnotationNodes를 모두 삭제한다.
     AnnotationUtils.removeAllAnnotationNodes();
 
-    const docId = webPdfLib.PDFViewerApplication.baseUrl;
+    const docId = annotationLib.PDFViewerApplication.baseUrl;
     AnnotationUtils.updateAnnotations(docId, annotations);
-    webPdfLib.PDFViewerApplication.pdfViewer.update(true);
+    annotationLib.PDFViewerApplication.pdfViewer.update(true);
   };
 
   return AnnotationManager;

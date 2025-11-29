@@ -1,4 +1,4 @@
-import webPdfLib from '../webPdfLib.js';
+import annotationLib from '../annotationLib.js';
 import AnnotationManager from '../annotation/annotationManager.js';
 
 /**  
@@ -35,7 +35,7 @@ export default class AView {
   static pintchZoom(execValue) {
     console.group(`function pintchZoom(execValue)`);
 
-    const PDFApp = webPdfLib.PDFViewerApplication;
+    const PDFApp = annotationLib.PDFViewerApplication;
     const { pdfViewer } = PDFApp;
     const previousScale = pdfViewer.currentScale;
     if (execValue.currentLevel > execValue.diffLevel) {
@@ -69,17 +69,17 @@ export default class AView {
     console.group(`function thumnailView(flag)`);
 
     if (flag === undefined) {
-      flag = !webPdfLib.PDFViewerApplication.pdfSidebar.isOpen;
+      flag = !annotationLib.PDFViewerApplication.pdfSidebar.isOpen;
     } else {
-      if (flag == webPdfLib.PDFViewerApplication.pdfSidebar.isOpen) {
+      if (flag == annotationLib.PDFViewerApplication.pdfSidebar.isOpen) {
         return;
       }
     }
 
     if (flag) {
-      webPdfLib.PDFViewerApplication.pdfSidebar.open();
+      annotationLib.PDFViewerApplication.pdfSidebar.open();
     } else {
-      webPdfLib.PDFViewerApplication.pdfSidebar.close();
+      annotationLib.PDFViewerApplication.pdfSidebar.close();
     }
 
     console.groupEnd();
@@ -89,8 +89,8 @@ export default class AView {
    * ACTION_ID.ROTATE_CW 액션시 호출되는 함수
    */
   static rotateCW() {
-    webPdfLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('rotatecw', {
-      source: webPdfLib.PDFViewerApplication.secondaryToolbar,
+    annotationLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('rotatecw', {
+      source: annotationLib.PDFViewerApplication.secondaryToolbar,
     });
   }
 
@@ -98,8 +98,8 @@ export default class AView {
    * ACTION_ID.ROTATE_CCW 액션시 호출되는 함수
    */
   static rotateCCW() {
-    webPdfLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('rotateccw', {
-      source: webPdfLib.PDFViewerApplication.secondaryToolbar,
+    annotationLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('rotateccw', {
+      source: annotationLib.PDFViewerApplication.secondaryToolbar,
     });
   }
 
@@ -109,10 +109,10 @@ export default class AView {
    */
   static switchScrollMode(scrollMode) {
     const details = {
-      source: webPdfLib.PDFViewerApplication.secondaryToolbar,
+      source: annotationLib.PDFViewerApplication.secondaryToolbar,
       mode: scrollMode,
     };
-    webPdfLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('switchscrollmode', details);
+    annotationLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('switchscrollmode', details);
   }
 
   /**
@@ -121,9 +121,9 @@ export default class AView {
    */
   static switchSpreadMode(spreadMode) {
     const details = {
-      source: webPdfLib.PDFViewerApplication.secondaryToolbar,
+      source: annotationLib.PDFViewerApplication.secondaryToolbar,
       mode: spreadMode,
     };
-    webPdfLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('switchspreadmode', details);
+    annotationLib.PDFViewerApplication.secondaryToolbar.eventBus.dispatch('switchspreadmode', details);
   }
 }
