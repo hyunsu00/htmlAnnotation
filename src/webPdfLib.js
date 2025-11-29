@@ -72,6 +72,8 @@ export default (function () {
 
           console.log(`[import(/* webpackIgnore: true */ ${lipsPath}/pdf-annotate.js) Succeeded`);
 
+          this.gUndoRedoManager = new UndoRedoManager("");
+          
           // import(/* webpackIgnore: true */ `${lipsPath}/pdfjs/web/viewer.js`)
           //   .then((module) => {
           //     this.PDFViewerApplication = window.PDFViewerApplication;
@@ -177,6 +179,17 @@ export default (function () {
     getEventManager() {
       return EventManager;
     },
+
+    /**
+     * AnnotationManager 함수객체 반환
+     * @memberof webPdfLib
+     *
+     * @return {AnnotationManager}
+     */
+    getAnnotationManager() {
+      return AnnotationManager;
+    },
+
     /**
      * target 개체의 속성 반환
      * @memberof webPdfLib

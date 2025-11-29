@@ -330,9 +330,25 @@ export default (function () {
     }
 
     // svg 렌더링
-    const rotation = webPdfLib.PDFViewerApplication.pdfViewer.pagesRotation;
-    const viewport = pdfPage.getViewport({ scale: scale, rotation: rotation });
-    // const viewport = pdfPage.getViewport({ scale: scale });
+    // const rotation = webPdfLib.PDFViewerApplication.pdfViewer.pagesRotation;
+    // const viewport = pdfPage.getViewport({ scale: scale, rotation: rotation });
+    const rotation = 0;
+    const viewport = {
+      height: 792,
+      offsetX: 0,
+      offsetY: 0,
+      rotation: rotation,
+      scale: scale,
+      transform: [1, 0, 0, -1, 0, 792],
+      viewBox: [0, 0, 612, 792],
+      width: 612
+    };
+    canvasWrapper = {
+      style: {
+        width: '816px',
+        height: '1056px'
+      }
+    };
     svg.setAttribute('width', viewport.width);
     svg.setAttribute('height', viewport.height);
     svg.style.width = canvasWrapper.style.width;
