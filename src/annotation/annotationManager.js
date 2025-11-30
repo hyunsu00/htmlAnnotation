@@ -18,6 +18,7 @@ import AnnotationUtils from './annotationUtils.js';
 import annotationLib from '../annotationLib.js';
 import EVENT_ID from "../define/eventDefines.js";
 import EventManager from '../event/eventManager.js';
+import { PageViewport } from "./PageViewport.js";
 
 export default (function () {
   /*******************************************************************************
@@ -317,7 +318,40 @@ export default (function () {
     this.switchUI('cursor');
   };
 
-  AnnotationManager.render = function (docId, parentNode, canvasWrapper, pageId, pdfPage, scale) {
+  // AnnotationManager.render = function (docId, parentNode, canvasWrapper, pageId, pdfPage, scale) {
+  //   let temp_div = document.createElement('div');
+  //   temp_div.innerHTML = '<svg class="annotationLayer"></svg>';
+  //   let svg = temp_div.firstChild;
+
+  //   let textLayer = parentNode.querySelector('div.textLayer');
+  //   if (textLayer) {
+  //     textLayer.before(svg);
+  //   } else {
+  //     parentNode.appendChild(svg);
+  //   }
+
+  //   // svg 렌더링
+  //   const rotation = webPdfLib.PDFViewerApplication.pdfViewer.pagesRotation;
+  //   const viewport = pdfPage.getViewport({ scale: scale, rotation: rotation });
+  //   // const viewport = pdfPage.getViewport({ scale: scale });
+  //   svg.setAttribute('width', viewport.width);
+  //   svg.setAttribute('height', viewport.height);
+  //   svg.style.width = canvasWrapper.style.width;
+  //   svg.style.height = canvasWrapper.style.height;
+
+  //   let annotateRender = this.annotateRender;
+  //   let annotationManager = this;
+  //   annotateRender.getAnnotations(docId, pageId).then(function (annotations) {
+  //     annotateRender.render(svg, viewport, annotations);
+  //     // ID는 자료형이 다르더라도 값이 같으면 같은 것으로 비교한다.
+  //     // 1 == "1" 은 true
+  //     if (pageId == annotateRender.UI.getSelectPageID()) {
+  //       annotationManager.select(annotationManager.getSelect());
+  //     }
+  //   });
+  // };
+
+  AnnotationManager.render = function (docId, parentNode, pageId, renderSize, pageSize, scale, rotation) {
     let temp_div = document.createElement('div');
     temp_div.innerHTML = '<svg class="annotationLayer"></svg>';
     let svg = temp_div.firstChild;
@@ -329,30 +363,19 @@ export default (function () {
       parentNode.appendChild(svg);
     }
 
-    // svg 렌더링
-    // const rotation = annotationLib.PDFViewerApplication.pdfViewer.pagesRotation;
-    // const viewport = pdfPage.getViewport({ scale: scale, rotation: rotation });
-    const rotation = 0;
-    const viewport = {
-      height: 792,
+    const viewBox = [0, 0, pageSize.width, pageSize.height];
+    const viewport = new PageViewport({
+      viewBox: viewBox,
+      scale: scale, 
+      rotation: rotation,
       offsetX: 0,
       offsetY: 0,
-      rotation: rotation,
-      scale: scale,
-      transform: [1, 0, 0, -1, 0, 792],
-      viewBox: [0, 0, 612, 792],
-      width: 612
-    };
-    canvasWrapper = {
-      style: {
-        width: '816px',
-        height: '1056px'
-      }
-    };
+      dontFlip: false
+    });
     svg.setAttribute('width', viewport.width);
     svg.setAttribute('height', viewport.height);
-    svg.style.width = canvasWrapper.style.width;
-    svg.style.height = canvasWrapper.style.height;
+    svg.style.width = renderSize.width;
+    svg.style.height = renderSize.height;
 
     let annotateRender = this.annotateRender;
     let annotationManager = this;
@@ -365,7 +388,7 @@ export default (function () {
       }
     });
   };
-
+  
   AnnotationManager.changeCursor = function (annotationType) {
     let viewer = document.querySelector('#viewer');
 

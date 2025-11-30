@@ -230,41 +230,28 @@
             img.src = `samples/page${pageNum}.png`;
           }
 
-          var docId = '/dist/libs/pdfjs/web/compressed.tracemonkey-pldi-09.pdf';
-          var parentNode = pageContent;
-          var canvasWrapper = pageContent.querySelector('.canvasWrapper');
-          var id = pageNum;
-          var pdfPage = null; // 실제 PDF 페이지 객체로 교체 필요
-          var scale = 1.0;
+          const docId = '/dist/libs/pdfjs/web/compressed.tracemonkey-pldi-09.pdf';
+          const parentNode = pageContent;
+          const pageId = pageNum;
+          const renderSize = {
+            width: pageContent.style.width,
+            height: pageContent.style.height
+          };
+          const pageSize = {
+            width: pageContent.getAttribute('data-page-size-width'),
+            height: pageContent.getAttribute('data-page-size-height')
+          };
+          const scale = 1.0;
+          const rotation = 0;          
           webPdfApp.getAnnotationManager().render(
             docId,
             parentNode,
-            canvasWrapper,
-            id,
-            pdfPage,
-            scale
+            pageId,
+            renderSize,
+            pageSize,
+            scale,
+            rotation
           );
-          // // textLayer 찾기
-          // const textLayer = pageContent.querySelector('.textLayer');
-          // if (textLayer) {
-          //   // annotationLayer SVG 생성
-          //   const annotationLayer = document.createElement('svg');
-          //   annotationLayer.className = 'annotationLayer';
-          //   annotationLayer.setAttribute('width', '612');
-          //   annotationLayer.setAttribute('height', '792');
-          //   annotationLayer.setAttribute('data-pdf-annotate-container', 'true');
-          //   annotationLayer.setAttribute('data-pdf-annotate-viewport', '{"viewBox":[0,0,612,792],"scale":1,"rotation":0,"offsetX":0,"offsetY":0,"transform":[1,0,0,-1,0,792],"width":612,"height":792}');
-          //   annotationLayer.setAttribute('data-pdf-annotate-document', '/dist/libs/pdfjs/web/compressed.tracemonkey-pldi-09.pdf');
-          //   annotationLayer.setAttribute('data-pdf-annotate-page', pageNum.toString());
-          //   annotationLayer.style.width = '816px';
-          //   annotationLayer.style.height = '1056px';
-            
-          //   console.log('annotationLayer created for page', pageNum, annotationLayer);
-            
-          //   // textLayer 앞에 annotationLayer 삽입
-          //   pageContent.insertBefore(annotationLayer, textLayer);
-          // }
-
           return pageContent;
         }
         return null;

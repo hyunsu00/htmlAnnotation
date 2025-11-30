@@ -5,6 +5,9 @@
 	"[html]": {
 		"editor.tabSize": 2 // .html 파일에 대한 탭 크기 설정
 	},
+	"[css]": {
+		"editor.tabSize": 2 // .css 파일에 대한 탭 크기 설정
+	},
 	"[json]": {
 		"editor.tabSize": 2 // .json 파일에 대한 탭 크기 설정
 	},
