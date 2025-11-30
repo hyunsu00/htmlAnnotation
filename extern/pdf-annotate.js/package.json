@@ -4,14 +4,9 @@
   "description": "Annotation layer for pdf.js",
   "main": "index.js",
   "scripts": {
-    "test": "karma start --single-run",
-    "start": "./scripts/web",
-    "lint": "./node_modules/.bin/eslint .",
-    "startindocker": "./scripts/web-docker",
     "build": "webpack --env.mode=production",
     "dev": "webpack --env.mode=development",
     "watch": "webpack --watch",
-    "codecov": "codecov",
     "clean": "rimraf ../../public/libs/pdf-annotate.js"
   },
   "repository": {
