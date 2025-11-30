@@ -1,12 +1,12 @@
 {
-  "name": "htmlannotation",
+  "name": "annotationLib",
   "version": "1.0.0",
   "description": "",
   "private": true,
-  "main": "dist/webpdfsdk.js",
+  "main": "dist/annotationLib.js",
   "scripts": {
     "build": "webpack",
-    "watch:webpdfsdk": "webpack --watch",
+    "watch:annotationLib": "webpack --watch",
     "watch:pdf-annotate.js": "npm --prefix ./extern/pdf-annotate.js run watch",
     "lib:pdf-annotate.js": "npm --prefix ./extern/pdf-annotate.js run build",
     "dev:pdf-annotate.js": "npm --prefix ./extern/pdf-annotate.js run dev",
