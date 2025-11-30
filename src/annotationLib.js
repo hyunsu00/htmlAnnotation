@@ -172,8 +172,7 @@ export default (function () {
       // } else {
       //   pdfThumbnailViewer.renderingQueue.renderView(thumbView);
       // }
-      console.log(`renderThumnail pageNum : ${pageNum}`);
-      console.log('--- [TODO] : 구현 필요 ---');
+      console.warn(`[TODO] : annotationLib.renderThumnail(pageNum) 구현 필요`);
     },
     /**
      * 컨텍스트 경로 반환

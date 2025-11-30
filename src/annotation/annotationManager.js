@@ -979,5 +979,69 @@ export default (function () {
     }
   };
 
+  AnnotationManager.renderThumnail = function (pageId) {
+    console.warn(`[TODO] : AnnotationManager.renderThumnail(pageId) 구현 필요`);
+
+    // // svg 엘리먼트 이미지로 변환
+    // const _convertImage = (svgEl) => {
+    //   return new Promise((resolve, reject) => {
+    //     let cloneEl = svgEl.cloneNode(true);
+    //     cloneEl.setAttribute('width', svgEl.getBoundingClientRect().width);
+    //     cloneEl.setAttribute('height', svgEl.getBoundingClientRect().height);
+
+    //     const data = new XMLSerializer().serializeToString(cloneEl);
+    //     var win = window.URL || window.webkitURL || window;
+    //     var img = new Image();
+    //     var blob = new Blob([data], { type: 'image/svg+xml' });
+    //     var url = win.createObjectURL(blob);
+    //     img.onload = () => resolve(img);
+    //     img.onerror = reject;
+    //     img.src = url;
+    //   });
+    // };
+    // const _renderSVG = async (canvas, svgEl) => {
+    //   let newCanvas = document.createElement('canvas');
+    //   let context = newCanvas.getContext('2d');
+
+    //   newCanvas.width = canvas.width;
+    //   newCanvas.height = canvas.height;
+
+    //   context.drawImage(canvas, 0, 0);
+
+    //   let image = await _convertImage(svgEl);
+    //   context.drawImage(image, 0, 0, image.width, image.height, 0, 0, newCanvas.width, newCanvas.height);
+
+    //   return newCanvas;
+    // };
+
+    // const pageEl = document.querySelector(`[data-page-number="${pageId}"][class="page"]`);
+    // if (!pageEl) {
+    //   return;
+    // }
+    // const svgEls = pageEl.getElementsByClassName('annotationLayer');
+    // if (svgEls.length <= 0) {
+    //   return;
+    // }
+    // const { canvas } = webPdfLib.PDFViewerApplication.pdfViewer.getPageView(pageId - 1);
+    // if (!canvas) {
+    //   return;
+    // }
+    // _renderSVG(canvas, svgEls[0]).then((img) => {
+    //   let thumnail = webPdfLib.PDFViewerApplication.pdfThumbnailViewer.getThumbnail(pageId - 1);
+    //   const reducedCanvas = thumnail._reduceImage(img);
+
+    //   if (thumnail.image) {
+    //     thumnail.image.src = reducedCanvas.toDataURL();
+    //     EventManager.dispatch(EVENT_ID.UPDATE_UI, { name: 'renderThumnail', value: pageId });
+    //   }
+
+    //   // 리소스 즉시 반환
+    //   reducedCanvas.width = 0;
+    //   reducedCanvas.height = 0;
+    //   img.width = 0;
+    //   img.height = 0;
+    // });
+  };
+
   return AnnotationManager;
 })();
