@@ -1,17 +1,5 @@
 // annotationManager.js
-/*
-import CommonFrameUtil from '../../../commonFrame/js/utils/util.js';
-import EventActionGenerator from '../../../commonFrame/js/uiFramework/eventActionGenerator.js';
-import UiDefine from '../../../commonFrame/js/uiFramework/uiDefine.js';
-*/
-/*
-import UiController from '../../../commonFrame/js/uiFramework/uiController.js';
-
-
-import Config from '../../common/config.js';
-*/
 import { PROPERTY_TYPE } from "../define/valueDefines.js";
-import Util from '../utils/util.js';
 import UiManager from '../uiFrame/uiManager.js';
 import AnnotationListener from '../listener/annotationListener.js';
 import AnnotationUtils from './annotationUtils.js';
@@ -91,7 +79,6 @@ export default (function () {
         _UI.seTextStrikethrough(this._textStrikethrough);
       }
     },
-
     get lineWidth() {
       return this._lineWidth ?? 1;
     },
@@ -127,31 +114,6 @@ export default (function () {
     },
     set modified(value) {
       this._modified = value;
-
-      var isEnableModifyAnnotation = this._modified;
-      if (typeof annotationLib.PDFViewerApplication != 'undefined' && !annotationLib.PDFViewerApplication.pdfViewer.enableModifyAnnotation) {
-        isEnableModifyAnnotation = false;
-      }
-
-      var isEnable = isEnableModifyAnnotation ? 'enable' : 'disable';
-      /*      
-            UiManager.setEventAction(isEnable, UiDefine.EVENT_ACTION_NAMES.D_SAVE);
-      */
-    },
-    get currentScaleValue() {
-      return annotationLib.PDFViewerApplication.pdfViewer.currentScaleValue;
-    },
-    set currentScaleValue(value) {
-      annotationLib.PDFViewerApplication.pdfViewer.currentScaleValue = value;
-    },
-    get totalPage() {
-      return annotationLib.PDFViewerApplication.pdfViewer.pagesCount;
-    },
-    get currentPageNumber() {
-      return annotationLib.PDFViewerApplication.pdfViewer.currentPageNumber;
-    },
-    set currentPageNumber(value) {
-      annotationLib.PDFViewerApplication.pdfViewer.currentPageNumber = value;
     },
     get documentTitle() {
       return window.document.title;
@@ -318,39 +280,6 @@ export default (function () {
     this.switchUI('cursor');
   };
 
-  // AnnotationManager.render = function (docId, parentNode, canvasWrapper, pageId, pdfPage, scale) {
-  //   let temp_div = document.createElement('div');
-  //   temp_div.innerHTML = '<svg class="annotationLayer"></svg>';
-  //   let svg = temp_div.firstChild;
-
-  //   let textLayer = parentNode.querySelector('div.textLayer');
-  //   if (textLayer) {
-  //     textLayer.before(svg);
-  //   } else {
-  //     parentNode.appendChild(svg);
-  //   }
-
-  //   // svg 렌더링
-  //   const rotation = webPdfLib.PDFViewerApplication.pdfViewer.pagesRotation;
-  //   const viewport = pdfPage.getViewport({ scale: scale, rotation: rotation });
-  //   // const viewport = pdfPage.getViewport({ scale: scale });
-  //   svg.setAttribute('width', viewport.width);
-  //   svg.setAttribute('height', viewport.height);
-  //   svg.style.width = canvasWrapper.style.width;
-  //   svg.style.height = canvasWrapper.style.height;
-
-  //   let annotateRender = this.annotateRender;
-  //   let annotationManager = this;
-  //   annotateRender.getAnnotations(docId, pageId).then(function (annotations) {
-  //     annotateRender.render(svg, viewport, annotations);
-  //     // ID는 자료형이 다르더라도 값이 같으면 같은 것으로 비교한다.
-  //     // 1 == "1" 은 true
-  //     if (pageId == annotateRender.UI.getSelectPageID()) {
-  //       annotationManager.select(annotationManager.getSelect());
-  //     }
-  //   });
-  // };
-
   AnnotationManager.render = function (docId, parentNode, pageId, renderSize, pageSize, scale, rotation) {
     let temp_div = document.createElement('div');
     temp_div.innerHTML = '<svg class="annotationLayer"></svg>';
@@ -421,18 +350,6 @@ export default (function () {
     this.disableUI(this.annotationType);
     this.enableUI(event.data.annotationType);
     this.annotationType = event.data.annotationType;
-  };
-
-  AnnotationManager.onSetStyleBarDisableState = function (value) {
-    /*    
-        UiManager.onSetStyleBarDisableState(value);
-    */
-  };
-
-  AnnotationManager.onSetAnnotationSidebarEnable = function (value) {
-    /*    
-        UiManager.onSetAnnotationSidebarEnable(value);
-    */
   };
 
   AnnotationManager.initStylebar = function () {
@@ -801,794 +718,6 @@ export default (function () {
     }
   };
 
-  AnnotationManager.renderExternalAnnotations = async function (annotations, pageIndex) {
-    if (annotations.length === 0) {
-      return;
-    }
-    const DEFAULT_SCALE = 1.0;
-    const PDF_TO_CSS_UNITS = 96.0 / 72.0;
-
-    try {
-      const docId = annotationLib.PDFViewerApplication.baseUrl;
-      const pdfDocument = annotationLib.PDFViewerApplication.pdfDocument;
-      const page = await pdfDocument.getPage(pageIndex + 1);
-
-      const viewport = page.getViewport({ scale: DEFAULT_SCALE * PDF_TO_CSS_UNITS });
-      const width = page.view[2];
-      const height = page.view[3];
-      const scaleX = width / viewport.width;
-      const scaleY = height / viewport.height;
-
-      const svg = document.querySelector(`svg[data-pdf-annotate-page="${pageIndex + 1}"]`);
-      if (!svg) {
-        return;
-      }
-
-      for (const annotation of annotations) {
-        console.log(`\tannotation =`, annotation);
-        const subtype = annotation.annotationType;
-        switch (subtype) {
-          case Util.AnnotationType.SQUARE: {
-            const sizeInfo = Util.decomposeAnnotationRect(annotation.rect[0], annotation.rect[1], annotation.rect[2], annotation.rect[3], height, scaleX, scaleY);
-            const fillColor = annotation.fillColor || null;
-            const strokeColor = annotation.color || null;
-
-            var scaledArray;
-            if (annotation.borderStyle.dashArray.length > 1) {
-              scaledArray = Array.from(annotation.borderStyle.dashArray, (v) => v / scaleX);
-            } else {
-              scaledArray = 'none';
-            }
-
-            let areaAnnotation = {
-              type: 'area',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: annotation.contentsObj.str,
-              x: sizeInfo.x,
-              y: sizeInfo.y,
-              width: sizeInfo.width,
-              height: sizeInfo.height,
-              fillColor: fillColor === null ? 'none' : Util.makeHexColor(fillColor[0], fillColor[1], fillColor[2]),
-              strokeColor: strokeColor === null ? 'none' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              opacity: annotation.strokeAlpha,
-              strokeWidth: annotation.borderStyle.width / scaleX,
-              strokeDasharray: scaledArray.toString(),
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, areaAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, areaAnnotation);
-
-            break;
-          }
-          case Util.AnnotationType.CIRCLE: {
-            const sizeInfo = Util.decomposeAnnotationCircle(annotation.rect[0], annotation.rect[1], annotation.rect[2], annotation.rect[3], height, scaleX, scaleY);
-            const fillColor = annotation.fillColor || null;
-            const strokeColor = annotation.color || null;
-
-            var scaledArray;
-            if (annotation.borderStyle.dashArray.length > 1) {
-              scaledArray = Array.from(annotation.borderStyle.dashArray, (v) => v / scaleX);
-            } else {
-              scaledArray = 'none';
-            }
-
-            let circleAnnotation = {
-              type: 'circle',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: annotation.contentsObj.str,
-              cx: sizeInfo.cx,
-              cy: sizeInfo.cy,
-              r: sizeInfo.r,
-              fillColor: fillColor === null ? 'none' : Util.makeHexColor(fillColor[0], fillColor[1], fillColor[2]),
-              strokeColor: strokeColor === null ? 'none' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              opacity: annotation.strokeAlpha,
-              strokeWidth: annotation.borderStyle.width / scaleX,
-              strokeDasharray: scaledArray.toString(),
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, circleAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, circleAnnotation);
-
-            break;
-          }
-          case Util.AnnotationType.TEXT: {
-            const sizeInfo = Util.decomposeAnnotationRect(annotation.rect[0], annotation.rect[1], annotation.rect[2], annotation.rect[3], height, scaleX, scaleY);
-            const strokeColor = annotation.color || null;
-
-            var scaledArray;
-            if (annotation.borderStyle.dashArray.length > 1) {
-              scaledArray = Array.from(annotation.borderStyle.dashArray, (v) => v / scaleX);
-            } else {
-              scaledArray = 'none';
-            }
-
-            let pointAnnotation = {
-              type: 'point',
-              x: sizeInfo.x,
-              y: sizeInfo.y,
-              fillColor: strokeColor === null ? '#FFFF00' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              strokeColor: '#000000',
-              opacity: annotation.strokeAlpha,
-              strokeWidth: annotation.borderStyle.width / scaleY,
-              strokeDasharray: scaledArray.toString(),
-            };
-
-            const dateObject = Util.toDateObject(annotation.modificationDate);
-            await AnnotationManager.annotateRender
-              .getStoreAdapter()
-              .addAnnotation(docId, pageIndex + 1, pointAnnotation)
-              .then((pointAnnotation) => {
-                AnnotationManager.annotateRender.getStoreAdapter().addComment(docId, pageIndex + 1, pointAnnotation.uuid, annotation.contentsObj.str.trim(), dateObject.toLocaleDateString(), annotation.titleObj.str);
-              });
-
-            AnnotationUtils.addAnnotationNode(svg, pointAnnotation);
-
-            break;
-          }
-          case Util.AnnotationType.FREETEXT: {
-            const sizeInfo = Util.decomposeAnnotationRect(annotation.rect[0], annotation.rect[1], annotation.rect[2], annotation.rect[3], height, scaleX, scaleY);
-
-            var scaledArray;
-            if (annotation.borderStyle.dashArray.length > 1) {
-              scaledArray = Array.from(annotation.borderStyle.dashArray, (v) => v / scaleX);
-            } else {
-              scaledArray = 'none';
-            }
-
-            let textColor = annotation.textColor ?? null;
-            textColor = textColor === null ? '#FF0000' : Util.makeHexColor(textColor[0], textColor[1], textColor[2]);
-
-            let textSize = annotation.textSize ?? null;
-            textSize = textSize === null ? this.annotateRender.calcDefaultTextSize() : annotation.textSize;
-
-            let contentStr = annotation.richText ?? null;
-            contentStr = contentStr === null ? annotation.contentsObj?.str : annotation.richText?.str;
-            let isBold = annotation.fontWeight ?? null;
-            isBold = isBold === null ? false : annotation.fontWeight;
-            let isItalic = annotation.fontItalic ?? null;
-            isItalic = isItalic === null ? false : annotation.fontItalic;
-            let isUnderline = annotation.textWord ?? null;
-            isUnderline = isUnderline === null ? false : annotation.textWord;
-            let islinethrough = annotation.textlineThrough ?? null;
-            islinethrough = islinethrough === null ? false : annotation.textlineThrough;
-
-            const divContentImage = Util.createDivContentImage(contentStr, textColor, 'Helvetica', textSize, isBold, isItalic, isUnderline, islinethrough);
-
-            let textboxAnnotation = {
-              type: 'textbox',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: contentStr,
-              x: sizeInfo.x,
-              y: sizeInfo.y,
-              width: sizeInfo.width,
-              height: sizeInfo.height,
-              fontFamily: 'Helvetica',
-              fontColor: textColor,
-              fontSize: textSize,
-              fontStyle: isItalic ? annotation.fontItalic : 'normal',
-              fontWeight: isBold ? annotation.fontWeight : 'normal',
-              opacity: 1,
-              content: contentStr,
-              rotation: 0,
-              textDecoration: { underline: isUnderline, linethrough: islinethrough },
-              imageUrl: divContentImage.imageUrl,
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, textboxAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, textboxAnnotation);
-
-            break;
-          }
-          case Util.AnnotationType.LINE: {
-            let lines = [];
-            lines.push([annotation.lineCoordinates[0] / scaleX, (height - annotation.lineCoordinates[3]) / scaleY]);
-            lines[1] = [annotation.lineCoordinates[2] / scaleX, (height - annotation.lineCoordinates[1]) / scaleY];
-
-            var scaledArray;
-            if (annotation.borderStyle.dashArray.length > 1) {
-              scaledArray = Array.from(annotation.borderStyle.dashArray, (v) => v / scaleX);
-            } else {
-              scaledArray = 'none';
-            }
-
-            const strokeColor = annotation.color || null;
-            let lineAnnotation = {
-              type: 'line',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: annotation.contentsObj.str,
-              strokeColor: strokeColor === null ? 'none' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              opacity: annotation.strokeAlpha,
-              strokeWidth: annotation.borderStyle.width / scaleY,
-              strokeDasharray: scaledArray.toString(),
-              lines,
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, lineAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, lineAnnotation);
-
-            break;
-          }
-          case Util.AnnotationType.POLYLINE: {
-            let points = [];
-            points.push([annotation.rect[0], annotation.rect[3]]);
-            points[1] = [annotation.rect[2], annotation.rect[1]];
-            const lines = Util.decomposeAnnotationLine(points, height, scaleX, scaleY);
-
-            var scaledArray;
-            if (annotation.borderStyle.dashArray.length > 1) {
-              scaledArray = Array.from(annotation.borderStyle.dashArray, (v) => v / scaleX);
-            } else {
-              scaledArray = 'none';
-            }
-
-            const strokeColor = annotation.color || null;
-            let polyLineAnnotation = {
-              type: 'line',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: annotation.contentsObj.str,
-              strokeColor: strokeColor === null ? 'none' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              opacity: annotation.strokeAlpha,
-              strokeWidth: annotation.borderStyle.width / scaleY,
-              strokeDasharray: scaledArray.toString(),
-              lines,
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, polyLineAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, polyLineAnnotation);
-
-            break;
-          }
-          case Util.AnnotationType.UNDERLINE: {
-            let points = [];
-
-            for (const quadPoint of annotation.quadPoints) {
-              points.push({
-                x: quadPoint[2].x / scaleX,
-                y: (height - quadPoint[1].y) / scaleY,
-                width: (quadPoint[1].x - quadPoint[2].x) / scaleX,
-                height: (quadPoint[1].y - quadPoint[2].y) / scaleY,
-              });
-            }
-
-            const strokeColor = annotation.color || null;
-            let underLineAnnotation = {
-              type: 'underline',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: annotation.contentsObj.str,
-              rectangles: points,
-              strokeColor: strokeColor === null ? 'none' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              opacity: annotation.strokeAlpha,
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, underLineAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, underLineAnnotation);
-            break;
-          }
-          case Util.AnnotationType.STRIKEOUT: {
-            let points = [];
-
-            for (const quadPoint of annotation.quadPoints) {
-              points.push({
-                x: quadPoint[2].x / scaleX,
-                y: (height - quadPoint[1].y) / scaleY,
-                width: (quadPoint[1].x - quadPoint[2].x) / scaleX,
-                height: (quadPoint[1].y - quadPoint[2].y) / scaleY,
-              });
-            }
-
-            const strokeColor = annotation.color || null;
-            let strikeoutAnnotation = {
-              type: 'strikeout',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: annotation.contentsObj.str,
-              rectangles: points,
-              strokeColor: strokeColor === null ? 'none' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              opacity: annotation.strokeAlpha,
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, strikeoutAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, strikeoutAnnotation);
-
-            break;
-          }
-          case Util.AnnotationType.HIGHLIGHT: {
-            let points = [];
-
-            for (const quadPoint of annotation.quadPoints) {
-              points.push({
-                x: quadPoint[2].x / scaleX,
-                y: (height - quadPoint[1].y) / scaleY,
-                width: (quadPoint[1].x - quadPoint[2].x) / scaleX,
-                height: (quadPoint[1].y - quadPoint[2].y) / scaleY,
-              });
-            }
-
-            const strokeColor = annotation.color || null;
-            let highlightAnnotation = {
-              type: 'highlight',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: annotation.contentsObj.str,
-              rectangles: points,
-              fillColor: strokeColor === null ? 'none' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              opacity: annotation.strokeAlpha,
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, highlightAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, highlightAnnotation);
-
-            break;
-          }
-          case Util.AnnotationType.INK: {
-            let paths = [];
-
-            for (let i = 0, ii = annotation.inkLists.length; i < ii; ++i) {
-              paths.push([]);
-              for (let j = 0, jj = annotation.inkLists[i].length; j < jj; j += 1) {
-                paths[i].push([annotation.inkLists[i][j].x / scaleX, (height - annotation.inkLists[i][j].y) / scaleY]);
-              }
-            }
-
-            var scaledArray;
-            if (annotation.borderStyle.dashArray.length > 1) {
-              scaledArray = Array.from(annotation.borderStyle.dashArray, (v) => v / scaleX);
-            } else {
-              scaledArray = 'none';
-            }
-
-            const strokeColor = annotation.color || null;
-            let drawingAnnotation = {
-              type: 'drawing',
-              creationDate: annotation.creationDate,
-              modificationDate: annotation.modificationDate,
-              hasPopup: annotation.hasPopup,
-              titleObj: annotation.titleObj.str,
-              contentsObj: annotation.contentsObj.str,
-              strokeColor: strokeColor === null ? 'none' : Util.makeHexColor(strokeColor[0], strokeColor[1], strokeColor[2]),
-              strokeWidth: annotation.borderStyle.width / scaleY,
-              strokeDasharray: scaledArray.toString(),
-              opacity: annotation.strokeAlpha,
-              paths,
-            };
-
-            await AnnotationManager.annotateRender.getStoreAdapter().addAnnotation(docId, pageIndex + 1, drawingAnnotation);
-            AnnotationUtils.addAnnotationNode(svg, drawingAnnotation);
-
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    } catch (e) {
-      console.log('Error when parsing the annotation');
-    }
-
-    this.modified = false;
-  };
-
-  AnnotationManager.save = async function (docId, pdfDocument, force) {
-    force = force ?? false;
-    if (!force && !this.modified) {
-      return;
-    }
-
-    try {
-      UiManager.showLoadingProgress();
-
-      let writer = await writeAnnotation(docId, pdfDocument);
-      let pdfData = writer.write();
-
-      EventManager.dispatch(EVENT_ID.DOCUMENT_SAVE, { data: pdfData });
-
-      UiManager.hideLoadingProgress();
-    } catch (err) {
-      console.log(`AnnotationManager.save Failed Err = ${err}`);
-    } finally {
-      this.modified = false;
-    }
-  };
-
-  AnnotationManager.saveAnnotation = async function (docId, force) {
-    try {
-      UiManager.showLoadingProgress();
-
-      // 주석을 얻어온다.
-      const annotations = AnnotationUtils.getAnnotations(docId);
-      const kcnetAnnotations = AnnotationUtils.exportKcnetAnnotations(annotations);
-      EventManager.dispatch(EVENT_ID.ANNOTATION_SAVE, { annotations: kcnetAnnotations });
-
-      UiManager.hideLoadingProgress();
-    } catch (err) {
-      console.log(`AnnotationManager.save Failed Err = ${err}`);
-    }
-  };
-
-  AnnotationManager.download = async function (docId, pdfDocument, fileName = 'output.pdf') {
-    UiManager.showLoadingProgress();
-    try {
-      let writer = await writeAnnotation(docId, pdfDocument);
-      writer.download(fileName ?? 'output.pdf');
-    } catch (err) {
-      console.log(`AnnotationManager.download Failed Err = ${err}`);
-    } finally {
-      UiManager.hideLoadingProgress();
-    }
-  };
-
-  AnnotationManager.downloadAnnotation = async function (docId, fileName = 'output.json') {
-    UiManager.showLoadingProgress();
-    try {
-      // 주석을 얻어온다.
-      const annotations = AnnotationUtils.getAnnotations(docId);
-      const kcnetAnnotations = AnnotationUtils.exportKcnetAnnotations(annotations);
-      // JSON 객체를 문자열로 변환 (pretty format)
-      let jsonString = JSON.stringify(kcnetAnnotations, null, 2); // 2-space indentation
-      // 문자열을 Blob 객체로 변환
-      let blob = new Blob([jsonString], { type: 'application/json' });
-      // Blob 객체를 사용하여 다운로드 링크 생성
-      let url = URL.createObjectURL(blob);
-      let a = document.createElement('a');
-      a.href = url;
-      a.download = fileName ?? 'output.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.log(`AnnotationManager.downloadAnnotation Failed Err = ${err}`);
-    } finally {
-      UiManager.hideLoadingProgress();
-    }
-  };
-
-  AnnotationManager.print = async function (docId, pdfDocument) {
-    try {
-      let writer = await writeAnnotation(docId, pdfDocument);
-      const pdfData = writer.write();
-      const blob = new Blob([pdfData], { type: 'application/pdf' });
-      const downloadFrame = document.querySelectorAll('#download_iframe')[0];
-      if (downloadFrame && !Util.isIE()) {
-        const url = window.URL.createObjectURL(blob);
-        downloadFrame.contentWindow.location = url;
-        downloadFrame.onload = function () {
-          setTimeout(function () {
-            downloadFrame.focus();
-            downloadFrame.contentWindow.print();
-            window.URL.revokeObjectURL(url);
-          }, 1);
-        };
-      }
-    } catch (err) {
-      console.log(`AnnotationManager.print Failed Err = ${err}`);
-    }
-  };
-
-  AnnotationManager.removeAnnotations = async function (buffer) {
-    const _isRemoveAnnot = function (subtype) {
-      switch (subtype) {
-        case '/Text':
-        case '/FreeText':
-        case '/Line':
-        case '/Square':
-        case '/Circle':
-        case '/PolyLine':
-        case '/Highlight':
-        case '/Underline':
-        case '/StrikeOut':
-        case '/Ink':
-          return true;
-        case '/Link':
-        case '/Polygon':
-        case '/Squiggly':
-        case '/Stamp':
-        case '/Caret':
-        case '/Popup':
-        case '/FileAttachment':
-        case '/Widget':
-        default:
-      }
-      return false;
-    };
-
-    const pdfDoc = await annotationLib.PDFLib.PDFDocument.load(buffer, {
-      ignoreEncryption: true,
-      parseSpeed: annotationLib.PDFLib.ParseSpeeds.Slow,
-      throwOnInvalidObject: true,
-      updateMetadata: true,
-      capNumbers: false,
-    });
-
-    const pages = pdfDoc.getPages();
-
-    pages.forEach((page) => {
-      const annots = page.node.Annots();
-      const annotsRef = page.node.dict.get(annotationLib.PDFLib.PDFName.Annots);
-      const size = annots?.size();
-
-      if (size) {
-        const annotRefs = annots.asArray();
-        for (let i = 0; i < annotRefs.length; i++) {
-          const annotRef = annotRefs[i];
-          if (!annotRef) {
-            continue;
-          }
-          const annotObj = page.node.context.lookup(annotRef);
-          if (annotObj) {
-            const subtype = annotObj.lookup(annotationLib.PDFLib.PDFName.of('Subtype'));
-            if (!_isRemoveAnnot(subtype.encodedName)) {
-              continue;
-            }
-
-            // /XObject Obj 삭제
-            const apObj = annotObj.lookup(annotationLib.PDFLib.PDFName.of('AP'));
-            if (apObj) {
-              const apRef = apObj.dict.get(annotationLib.PDFLib.PDFName.of('N'));
-              if (apRef) {
-                annots.context.delete(apRef);
-              }
-            }
-          }
-
-          // Page내의 /Annots내의 /Annot 요소 삭제
-          const Annots = page.node.Annots();
-          if (Annots) {
-            const index = Annots.indexOf(annotRef);
-            if (index !== undefined) {
-              // Page내의 /Annots내의 /Annot 요소 삭제
-              Annots.remove(index);
-            }
-          }
-
-          // /Annot Obj 삭제
-          annots.context.delete(annotRef);
-        }
-      }
-
-      if (!annots?.size()) {
-        // /Annots Obj 삭제
-        page.node.context.delete(annotsRef);
-        // Page내의 /Annots 요소 삭제
-        page.node.delete(annotationLib.PDFLib.PDFName.Annots);
-      }
-    });
-
-    const pdfBytes = await pdfDoc.save({
-      useObjectStreams: false,
-      addDefaultPage: false,
-      objectsPerTick: 50,
-      updateFieldAppearances: true,
-    });
-    return pdfBytes;
-  };
-
-  async function writeAnnotation(docId, pdfDocument) {
-    const DEFAULT_SCALE = 1.0;
-    const PDF_TO_CSS_UNITS = 96.0 / 72.0;
-
-    let writer = new annotationLib.PDFAnnotateWriter.AnnotationFactory(AnnotationManager.documentData);
-    const pagesCount = annotationLib.PDFViewerApplication.pagesCount;
-
-    try {
-      for (let i = 1; i <= pagesCount; i++) {
-        // page를 얻어온다.
-        let page = await pdfDocument.getPage(i);
-        // 주석을 얻어온다.
-        let annotations = await AnnotationManager.annotateRender.getAnnotations(docId, page._pageIndex + 1);
-        const viewport = page.getViewport({ scale: DEFAULT_SCALE * PDF_TO_CSS_UNITS });
-        const width = page.view[2];
-        const height = page.view[3];
-        const scaleX = width / viewport.width;
-        const scaleY = height / viewport.height;
-        for (let j = 0; j < annotations.annotations.length; j++) {
-          let annotation = annotations.annotations[j];
-          let pageIndex = annotations.pageNumber - 1;
-
-          if (annotation.type == 'area') {
-            const sizeInfo = Util.computeAnnotationRect(annotation.x, annotation.y, annotation.width, annotation.height, height, scaleX, scaleY);
-            var borderStyleArray = Array.from(annotation.strokeDasharray.split(','), Number);
-            var scaledArray = Array.from(borderStyleArray, (v) => v * scaleX);
-
-            const value = {
-              page: pageIndex,
-              rect: [sizeInfo.left, sizeInfo.top, sizeInfo.right, sizeInfo.bottom],
-              color: Util.hexToRgb(annotation.strokeColor),
-              fill: Util.hexToRgb(annotation.fillColor),
-              opacity: annotation.opacity,
-              border: { horizontal_corner_radius: 0, vertical_corner_radius: 0, border_width: annotation.strokeWidth * scaleX, border_style: scaledArray },
-              annotationFlags: { print: true },
-            };
-            let ta = writer.createSquareAnnotation(value);
-            ta.createDefaultAppearanceStream();
-          } else if (annotation.type == 'circle') {
-            const _circleRect = Util.circleToRect(annotation.cx, annotation.cy, annotation.r);
-            const sizeInfo = Util.computeAnnotationRect(_circleRect.x, _circleRect.y, _circleRect.width, _circleRect.height, height, scaleX, scaleY);
-            var borderStyleArray = Array.from(annotation.strokeDasharray.split(','), Number);
-            var scaledArray = Array.from(borderStyleArray, (v) => v * scaleX);
-
-            const value = {
-              page: pageIndex,
-              rect: [sizeInfo.left, sizeInfo.top, sizeInfo.right, sizeInfo.bottom],
-              color: Util.hexToRgb(annotation.strokeColor),
-              fill: Util.hexToRgb(annotation.fillColor),
-              opacity: annotation.opacity,
-              border: { horizontal_corner_radius: 0, vertical_corner_radius: 0, border_width: annotation.strokeWidth * scaleX, border_style: scaledArray },
-              annotationFlags: { print: true },
-            };
-            let ta = writer.createCircleAnnotation(value);
-            // ta.createDefaultAppearanceStream();
-          } else if (annotation.type == 'highlight') {
-            for (let k = 0; k < annotation.rectangles.length; k++) {
-              const rect = annotation.rectangles[k];
-              const sizeInfo = Util.computeAnnotationRect(rect.x, rect.y, rect.width, rect.height, height, scaleX, scaleY);
-              const value = {
-                page: pageIndex,
-                rect: [sizeInfo.left, sizeInfo.top, sizeInfo.right, sizeInfo.bottom],
-                color: Util.hexToRgb(annotation.fillColor),
-                opacity: annotation.opacity,
-                annotationFlags: { print: true },
-              };
-              writer.createHighlightAnnotation(value);
-            }
-          } else if (annotation.type == 'drawing') {
-            annotation.paths.forEach((lines) => {
-              const ToSmoothLines = AnnotationManager.annotateRender.ToSmoothLines;
-              const smoothing = AnnotationManager.annotateRender.smoothing;
-              const smoothingLines = ToSmoothLines(lines, smoothing.SmoothCurves);
-              let points = [];
-              for (let k = 0; k < smoothingLines.length; k++) {
-                let line = smoothingLines[k];
-                let x = Number(line[0]),
-                  y = Number(line[1]);
-                const sizeInfo = Util.computeAnnotationRect(x, y, 0, 0, height, scaleX, scaleY);
-                points.push(sizeInfo.left);
-                points.push(sizeInfo.top);
-              }
-
-              const value = {
-                page: pageIndex,
-                rect: [0, 0, width, height],
-                inkList: points,
-                color: Util.hexToRgb(annotation.strokeColor),
-                opacity: annotation.opacity,
-                border: { horizontal_corner_radius: 0, vertical_corner_radius: 0, border_width: annotation.strokeWidth * scaleX },
-                annotationFlags: { print: true },
-              };
-              writer.createInkAnnotation(value);
-            });
-          } else if (annotation.type == 'strikeout') {
-            for (let k = 0; k < annotation.rectangles.length; k++) {
-              const rect = annotation.rectangles[k];
-              const sizeInfo = Util.computeAnnotationRect(rect.x, rect.y, rect.width, rect.height, height, scaleX, scaleY);
-              const value = {
-                page: pageIndex,
-                rect: [sizeInfo.left, sizeInfo.top, sizeInfo.right, sizeInfo.bottom],
-                color: Util.hexToRgb(annotation.strokeColor),
-                opacity: annotation.opacity,
-                annotationFlags: { print: true },
-              };
-              writer.createStrikeOutAnnotation(value);
-            }
-          } else if (annotation.type == 'underline') {
-            for (let k = 0; k < annotation.rectangles.length; k++) {
-              const rect = annotation.rectangles[k];
-              const sizeInfo = Util.computeAnnotationRect(rect.x, rect.y, rect.width, rect.height, height, scaleX, scaleY);
-              const value = {
-                page: pageIndex,
-                rect: [sizeInfo.left, sizeInfo.top, sizeInfo.right, sizeInfo.bottom],
-                color: Util.hexToRgb(annotation.strokeColor),
-                opacity: annotation.opacity,
-                annotationFlags: { print: true },
-              };
-              writer.createUnderlineAnnotation(value);
-            }
-          } else if (annotation.type == 'point') {
-            let comments = await AnnotationManager.annotateRender.getStoreAdapter().getComments(docId, annotation.uuid);
-            if (comments.length == 0) {
-              continue;
-            }
-            const comment = comments[0];
-            const iconSize = 25;
-            const sizeInfo = Util.computeAnnotationRect(annotation.x, annotation.y, iconSize, iconSize, height, scaleX, scaleY);
-            const value = {
-              page: pageIndex,
-              rect: [sizeInfo.left, sizeInfo.bottom, sizeInfo.right, sizeInfo.top],
-              contents: comment.content,
-              author: comment.author,
-              updateDate: new Date(comment.dataString),
-              creationDate: new Date(comment.dataString),
-              open: true,
-              color: Util.hexToRgb(annotation.fillColor),
-              opacity: annotation.opacity,
-              annotationFlags: { print: true },
-            };
-            let ta = writer.createTextAnnotation(value);
-            ta.createDefaultAppearanceStream();
-          } else if (annotation.type == 'textbox') {
-            const fontSize = annotation.fontSize;
-            let contents = annotation.content;
-            const imageUrl = annotation.imageUrl;
-            const textColor = Util.hexToRgb(annotation.fontColor);
-            const sizeInfo = Util.computeAnnotationRect(annotation.x, annotation.y, annotation.width, annotation.height, height, scaleX, scaleY);
-            const richTextResult = {
-              contentStr: annotation.content,
-              fontColor: annotation.fontColor,
-              fontFamily: annotation.fontFamily,
-              fontSize: annotation.fontSize,
-              isBold: annotation.fontWeight === 'normal' ? false : true,
-              isItalic: annotation.fontStyle === 'normal' ? false : true,
-              isUnderline: annotation.textDecoration.underline,
-              isLineThrough: annotation.textDecoration.linethrough,
-            };
-
-            let ta = writer.createFreeTextAnnotationEx({
-              page: pageIndex,
-              rect: [sizeInfo.left, sizeInfo.top, sizeInfo.right, sizeInfo.bottom],
-              imageUrl: imageUrl,
-              contents: contents,
-              richtextString: richTextResult,
-              richtextStringContent: annotation.content,
-              color: textColor,
-              font: 'Helvetica',
-              fontSize: Math.floor(fontSize),
-              opacity: 1,
-              annotationFlags: { print: true },
-            });
-            ta.createDefaultAppearanceStream();
-          } else if (annotation.type === 'line') {
-            const x1 = annotation.lines[0][0] * scaleX;
-            const y1 = height - annotation.lines[0][1] * scaleY;
-            const x2 = annotation.lines[1][0] * scaleX;
-            const y2 = height - annotation.lines[1][1] * scaleY;
-
-            var borderStyleArray = Array.from(annotation.strokeDasharray.split(','), Number);
-            var scaledArray = Array.from(borderStyleArray, (v) => v * scaleX);
-
-            let val = {
-              page: pageIndex,
-              rect: [x1, y1, x2, y2],
-              vertices: [x1, y1, x2, y2],
-              color: Util.hexToRgb(annotation.strokeColor),
-              opacity: annotation.opacity,
-              border: { horizontal_corner_radius: 0, vertical_corner_radius: 0, border_width: annotation.strokeWidth * scaleX, border_style: scaledArray },
-              annotationFlags: { print: true },
-            };
-
-            let ta = writer.createPolyLineAnnotation(val);
-            ta.createDefaultAppearanceStream();
-          }
-        }
-      }
-    } catch (e) {
-      console.log('Error when writeAnnotation');
-    }
-
-    return writer;
-  }
-
   AnnotationManager.disableUI = function (annotationType) {
     const _UI = AnnotationManager.annotateRender.UI;
 
@@ -1615,9 +744,6 @@ export default (function () {
         _UI.disableText();
 
         if (!this.getSelect()) {
-          /*          
-                    UiManager.onSetStyleBarDisableState(true);
-          */
         }
         break;
       case 'cursor':
@@ -1652,9 +778,6 @@ export default (function () {
         break;
       case 'text':
         _UI.enableText();
-        /*        
-                UiManager.onSetStyleBarDisableState(false);
-        */
         break;
       case 'cursor':
         _UI.enableEdit();
@@ -1662,68 +785,6 @@ export default (function () {
       default:
         break;
     }
-  };
-
-  AnnotationManager.renderThumnail = function (pageId) {
-    // svg 엘리먼트 이미지로 변환
-    const _convertImage = (svgEl) => {
-      return new Promise((resolve, reject) => {
-        let cloneEl = svgEl.cloneNode(true);
-        cloneEl.setAttribute('width', svgEl.getBoundingClientRect().width);
-        cloneEl.setAttribute('height', svgEl.getBoundingClientRect().height);
-
-        const data = new XMLSerializer().serializeToString(cloneEl);
-        var win = window.URL || window.webkitURL || window;
-        var img = new Image();
-        var blob = new Blob([data], { type: 'image/svg+xml' });
-        var url = win.createObjectURL(blob);
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = url;
-      });
-    };
-    const _renderSVG = async (canvas, svgEl) => {
-      let newCanvas = document.createElement('canvas');
-      let context = newCanvas.getContext('2d');
-
-      newCanvas.width = canvas.width;
-      newCanvas.height = canvas.height;
-
-      context.drawImage(canvas, 0, 0);
-
-      let image = await _convertImage(svgEl);
-      context.drawImage(image, 0, 0, image.width, image.height, 0, 0, newCanvas.width, newCanvas.height);
-
-      return newCanvas;
-    };
-
-    const pageEl = document.querySelector(`[data-page-number="${pageId}"][class="page"]`);
-    if (!pageEl) {
-      return;
-    }
-    const svgEls = pageEl.getElementsByClassName('annotationLayer');
-    if (svgEls.length <= 0) {
-      return;
-    }
-    const { canvas } = annotationLib.PDFViewerApplication.pdfViewer.getPageView(pageId - 1);
-    if (!canvas) {
-      return;
-    }
-    _renderSVG(canvas, svgEls[0]).then((img) => {
-      let thumnail = annotationLib.PDFViewerApplication.pdfThumbnailViewer.getThumbnail(pageId - 1);
-      const reducedCanvas = thumnail._reduceImage(img);
-
-      if (thumnail.image) {
-        thumnail.image.src = reducedCanvas.toDataURL();
-        EventManager.dispatch(EVENT_ID.UPDATE_UI, { name: 'renderThumnail', value: pageId });
-      }
-
-      // 리소스 즉시 반환
-      reducedCanvas.width = 0;
-      reducedCanvas.height = 0;
-      img.width = 0;
-      img.height = 0;
-    });
   };
 
   AnnotationManager.doKeyDownEvent = function (e) {
@@ -1748,9 +809,6 @@ export default (function () {
       case 'cursor':
         if (keyCode === escKeyCode) {
           this.select(null);
-          /*          
-                    $.publish('/ui/action', EventActionGenerator.makeUpdateEventAction('e_find_close'));
-          */
         } else if (keyCode === delKeyCode) {
           if (this.getSelect()) {
             e.preventDefault();
@@ -1764,20 +822,6 @@ export default (function () {
   };
 
   AnnotationManager.doMouseClickEvent = function (e, id) {
-    /*    
-        if (UiManager.isPopupEditing()) {
-          UiManager.onSetUIEvents(false);
-          UiManager.setEditDisabled(true);
-          UiManager.setPopupEditing(false);
-        } else {
-          if (UiManager.isEditDisabled()) {
-            if (id === UiDefine.DOCUMENT_MENU_ID) {
-              UiManager.onSetUIEvents(true);
-              UiManager.setEditDisabled(false);
-            }
-          }
-        }
-    */
   };
 
   AnnotationManager.getAnnotationProperties = function (target) {
@@ -1892,6 +936,47 @@ export default (function () {
     const docId = annotationLib.PDFViewerApplication.baseUrl;
     AnnotationUtils.updateAnnotations(docId, annotations);
     annotationLib.PDFViewerApplication.pdfViewer.update(true);
+  };
+
+  AnnotationManager.saveAnnotation = async function (docId, force) {
+    try {
+      UiManager.showLoadingProgress();
+
+      // 주석을 얻어온다.
+      const annotations = AnnotationUtils.getAnnotations(docId);
+      const kcnetAnnotations = AnnotationUtils.exportKcnetAnnotations(annotations);
+      EventManager.dispatch(EVENT_ID.ANNOTATION_SAVE, { annotations: kcnetAnnotations });
+
+      UiManager.hideLoadingProgress();
+    } catch (err) {
+      console.log(`AnnotationManager.save Failed Err = ${err}`);
+    }
+  };
+
+  AnnotationManager.downloadAnnotation = async function (docId, fileName = 'output.json') {
+    UiManager.showLoadingProgress();
+    try {
+      // 주석을 얻어온다.
+      const annotations = AnnotationUtils.getAnnotations(docId);
+      const kcnetAnnotations = AnnotationUtils.exportKcnetAnnotations(annotations);
+      // JSON 객체를 문자열로 변환 (pretty format)
+      let jsonString = JSON.stringify(kcnetAnnotations, null, 2); // 2-space indentation
+      // 문자열을 Blob 객체로 변환
+      let blob = new Blob([jsonString], { type: 'application/json' });
+      // Blob 객체를 사용하여 다운로드 링크 생성
+      let url = URL.createObjectURL(blob);
+      let a = document.createElement('a');
+      a.href = url;
+      a.download = fileName ?? 'output.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.log(`AnnotationManager.downloadAnnotation Failed Err = ${err}`);
+    } finally {
+      UiManager.hideLoadingProgress();
+    }
   };
 
   return AnnotationManager;

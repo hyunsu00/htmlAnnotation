@@ -1,8 +1,3 @@
-/*
-import UiManager from "../../uiFrame/uiManager.js";
-import UIDefine from "../../../commonFrame/js/uiFramework/uiDefine.js";
-*/
-
 export default class UndoRedoManager {
 
 	_undoStack = [];
@@ -52,24 +47,6 @@ export default class UndoRedoManager {
 	}
 
 	_UpdateUI() {
-/*		
-		let isEnable;
-		if (this._undoStack.length <= 0) {
-			isEnable = UIDefine.EVENT_ACTION_TYPE.DISABLE;
-		} else {
-			isEnable = UIDefine.EVENT_ACTION_TYPE.ENABLE;
-		}
-
-		UiManager.setEventAction(isEnable, UIDefine.EVENT_ACTION_NAMES.E_UNDO);
-
-		if (this._redoStack.length <= 0) {
-			isEnable = UIDefine.EVENT_ACTION_TYPE.DISABLE;
-		} else {
-			isEnable = UIDefine.EVENT_ACTION_TYPE.ENABLE;
-		}
-
-		UiManager.setEventAction(isEnable, UIDefine.EVENT_ACTION_NAMES.E_REDO);
-*/		
 	}
 
 	_Debug(funcName) {

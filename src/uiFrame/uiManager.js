@@ -2,28 +2,14 @@ import EventManager from '../event/eventManager.js';
 import EVENT_ID from '../define/eventDefines.js';
 
 export default (function () {
-  let _popupEditing, _isEditDisabled, _selection, _range;
+  let _selection, _range;
 
   return {
     hideLoadingProgress: function () {
       EventManager.dispatch(EVENT_ID.UPDATE_UI, { name: 'loadingProgress', value: false });
     },
-
     showLoadingProgress: function () {
       EventManager.dispatch(EVENT_ID.UPDATE_UI, { name: 'loadingProgress', value: true });
-    },
-
-    isEditDisabled: function () {
-      return _isEditDisabled;
-    },
-    setEditDisabled: function (state) {
-      _isEditDisabled = state;
-    },
-    isPopupEditing: function () {
-      return _popupEditing;
-    },
-    setPopupEditing: function (state) {
-      _popupEditing = state;
     },
     getSelection: function () {
       return _selection;

@@ -54,6 +54,7 @@ export const ACTION_ID = {
   PRINT: 'd_print',
   PASSWORD: 'e_dialog_password',
   DOCUMENT_PROPERTIES: 'd_info',
+
   //
   // 편집
   //
@@ -63,31 +64,7 @@ export const ACTION_ID = {
   DELETE: 'a_delete_annotation',
   SELECT_ALL: 'e_select_all',
   SELECT_CLEAR: 'e_select_clear',
-  // 찾기
-  FIND_OPEN: 'd_find',
-  FIND_CLOSE: 'd_find_close',
-  //
-  // 보기
-  //
-  // 줌
-  ZOOM: 'e_zoom',
-  // 핀치줌
-  PINTCH_ZOOM: 'e_pintch_zoom',
-  // 썸네일 뷰
-  THUMBNAIL_VIEW: 'document_window',
-  // 시계방향으로 회전
-  ROTATE_CW: 'e_rotate_cw',
-  // 시계 반대방향으로회전
-  ROTATE_CCW: 'e_rotate_ccw',
-  // 스크롤 모드 변경
-  SWITCH_SCROLL_MODE: 'e_switch_scroll_mode',
-  // 펼쳐짐 모드 변경
-  SWITCH_SPREAD_MODE: 'e_switch_spread_mode',
-  //
-  // 슬라이드쇼
-  //
-  SLIDESHOW_FIRST: 'e_show_mode_start',
-  SLIDESHOW_CURRENT: 'e_show_mode',
+
   //
   // 주석
   //
@@ -96,19 +73,11 @@ export const ACTION_ID = {
   QUICK_STRIKEOUT: 'a_quick_strikeout',
   QUICK_HIGHLIGHT: 'a_quick_highlight',
   CHANGE_PROPERTY: 'a_property',
+
   //
   // 도구
   //
   SELECT_CURSOR: 'switchcursortool',
-
-  //
-  // 페이지 이동
-  //
-  FIRST_PAGE: 'e_first_page',
-  PREV_PAGE: 'e_previous_page',
-  NEXT_PAGE: 'e_next_page',
-  LAST_PAGE: 'e_last_page',
-  GOTO_PAGE: 'page_number',
 };
 
 export default ACTION_ID;

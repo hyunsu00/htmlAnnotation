@@ -9,31 +9,6 @@ import {FIND_TYPE, LINE_STYLE, COLOR_TYPE, PROPERTY_TYPE} from "../define/valueD
 export default (function () {
   return {
     /**
-     * ACTION_ID.FIND_OPEN 액션에 사용되는 value 생성
-     * @memberof ValueGenerator
-     * @param {FIND_TYPE} type - FIND_TYPE
-     * @param {String} query - 찾을 내용
-     * @param {boolean} caseSensitive - 대/소문자 구분
-     * @param {boolean} entireWord - 단어 단위로
-     * @param {boolean} highlightAll - 모두 강조 표시
-     * @param {boolean} findPrevious - 찾을 방향
-     *
-     * @return {Object}
-     */
-    createFindValue(type, query, caseSensitive, entireWord, highlightAll, findPrevious) {
-      return {
-        source: annotationLib.PDFViewerApplication.findBar,
-        type: type,
-        query: query,
-        phraseSearch: true,
-        caseSensitive: caseSensitive ? 1 : 0,
-        entireWord: entireWord ? 1 : 0,
-        highlightAll: highlightAll ? 1 : 0,
-        findPrevious: findPrevious ? 1 : 0,
-        matchDiacritics: false,
-      };
-    },
-    /**
      * ACTION_ID.CHANGE_PROPERTY 액션에 사용되는 value 생성
      * @memberof ValueGenerator
      * @param {Object} target - Annotation개체

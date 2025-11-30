@@ -49,31 +49,4 @@ export default class AEdit {
     UiManager.clearSelection();
     console.groupEnd();
   }
-  /**
-   * ACTION_ID.FIND_OPEN 액션시 호출되는 함수
-   * @param {Object} value - 찾기데이터
-   * @param {Object} value.source - source
-   * @param {FIND_TYPE} value.type - 찾기 타입
-   * @param {String} value.query - 찾을 내용
-   * @param {boolean} value.phraseSearch - 구문 검색
-   * @param {1|0} value.caseSensitive - 대/소문자 구분
-   * @param {1|0} value.entireWord - 단어 단위로
-   * @param {1|0} value.highlightAll - 모두 강조 표시
-   * @param {1|0} value.findPrevious - 찾을 방향
-   * @param {boolean} value.matchDiacritics - 분음부호일치
-   */
-  static d_find(value) {
-    console.group(`function d_find(_value)`);
-    annotationLib.PDFViewerApplication.findBar.eventBus.dispatch('find', value);
-    // console.warn(`function d_find(_evtAction) 다이얼로그 구현 필요`);
-    console.groupEnd();
-  }
-  /**
-   * ACTION_ID.FIND_CLOSE 액션시 호출되는 함수
-   */
-  static d_find_close() {
-    annotationLib.PDFViewerApplication.findBar.eventBus.dispatch('findbarclose', {
-      source: annotationLib.PDFViewerApplication.findBar,
-    });
-  }
 }
